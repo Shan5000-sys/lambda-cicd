@@ -23,8 +23,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY  }}
           aws-region: ca-central-1
       - name: Validate CloudFormation template
-        run |
-          aws cloudformation validate-template --template-body  file://cloudformation/s3-bucket.yml
+        run: |
+        aws cloudformation validate-template --template-body  file://cloudformation/s3-bucket.yml
 
       - name: Deploy test stack
         run: |
