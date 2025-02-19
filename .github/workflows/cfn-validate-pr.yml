@@ -52,10 +52,10 @@ jobs:
               body: 'CloudFormation test stack deployed! Stack name: pr-test-stack-${{ github.event.pull_request.number }}'            
             })
             
-cleanup-on-merge:
-  runs-on: ubuntu-latest
-  if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
-  steps:
+  cleanup-on-merge:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
     - name: Configure AWS Credentials
