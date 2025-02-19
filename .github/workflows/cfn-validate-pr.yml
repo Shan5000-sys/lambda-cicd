@@ -24,7 +24,7 @@ jobs:
           aws-region: ca-central-1
       - name: Validate CloudFormation template
         run: |
-        aws cloudformation validate-template --template-body  file://cloudformation/s3-bucket.yml
+          aws cloudformation validate-template --template-body file://cloudformation/s3-bucket.yml
 
       - name: Deploy test stack
         run: |
