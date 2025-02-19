@@ -1,4 +1,4 @@
-name: Deploy AWS Lambda
+name: Deploy AWS Lambda Final
 
 on:
   pull_request:
@@ -27,7 +27,7 @@ jobs:
         run: |
           aws cloudformation validate-template --template-body file://cloudformation/s3-bucket.yml
 
-      - name: Deploy Test Stack (Dry Run)
+      - name: Deploy Test Stack 
         run: |
           stack_name="pr-test-stack-${{ github.event.pull_request.number }}"
           aws cloudformation deploy --stack-name $stack_name \
