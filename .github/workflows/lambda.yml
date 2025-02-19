@@ -4,36 +4,35 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
-
-permissions:
-  id-token: write
-  contents: read
+    paths:
+      - 'lambda/'
 
 jobs:
-  deploy-lambda:
-    runs-on: ubuntu-latest
+  deploy-lambda: #Name of our job
+    runs-on: ubuntu-latest # Set-up or specifies our runner
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
+      - name: Set Up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Install Dependencies # Installs any packages
+        run: |
+          python: -m pip install --upgrade pip
+          pip install -r lambda/requirements.txt -t lambda/
+
+      - name: Configure AWS Creds # Sets up our AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: us-east-1
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
 
-      - name: Check Lambda Code Exists
-        run: ls -la lambda_function.py || { echo "❌ Lambda code missing!"; exit 1; }
-
-      - name: Zip Lambda Function
-        run: zip -r lambda_function.zip lambda_function.py
-
-      - name: Deploy Lambda
+      - name: Deploy Lambda Function #Zips Lambda directory and updates Lambda function
         run: |
-          aws lambda update-function-code --function-name MyLambdaFunction \
-            --zip-file fileb://lambda_function.zip || { echo "❌ Deployment failed!"; exit 1; }
-
-      - name: Debugging - Show AWS Lambda Info
-        run: aws lambda get-function --function-name MyLambdaFunction
+          cd lambda
+          zip -r lambda.zip .
+          aws lambda update-function-code --function-name my-test-cicd-lambda --zip-file fileb://lambda.zip
+        
