@@ -5,6 +5,10 @@ on:
   pull_request:
     paths:
       - 'cloudformation/**'
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   pull-requests: write
