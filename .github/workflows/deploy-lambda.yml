@@ -44,8 +44,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ca-central-1  # Ensure this matches your AWS region
 
-      - name: Verify AWS Credentials
+      - name: Debug AWS Credentials
+        run: env | grep AWS
+
+      - name: Check AWS Identity
         run: aws sts get-caller-identity
+
+      - name: Deploy to AWS
+        run: aws s3 ls  # Example AWS command (replace with your actual deployment step)
         
       - name: Deploy Lambda Function # Deploy the packaged Lambda zip
         run: |
