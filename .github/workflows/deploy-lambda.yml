@@ -24,20 +24,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r lambda/requirements.txt -t package/  # Install dependencies in 'package/'
         
-      - name: Package Lambda Function
+      - name: Package and Deploy Lambda Function
         run: |
-          rm -f lambda.zip  # Ensure there's no previous ZIP file
-          echo "Checking package directory before zipping..."
-          ls -lh package/  # Debugging: List installed dependencies
+          rm -f lambda.zip
+          mkdir -p package/
+          python3 -m pip install -r lambda/requirements.txt -t package/
           cd package || exit 1
-          zip -r ../lambda.zip .  # Zip all dependencies first
+          zip -r ../lambda.zip .
           cd ../lambda || exit 1
-          echo "Checking lambda directory before zipping..."
-          ls -lh  # Debugging: Ensure lambda_function.py exists
-          zip -g ../lambda.zip lambda_function.py  # Add Lambda function code
-          zip -g ../lambda.zip requirements.txt  # Include requirements.txt for reference
+          zip -g ../lambda.zip lambda_function.py
+          zip -g ../lambda.zip requirements.txt
           cd ..
-          ls -lh lambda.zip  # Debugging: Check if zip was created
+          aws lambda update-function-code --function-name my-test-cicd-lambda --zip-file fileb://lambda.zip
         
       - name: Configure AWS Creds # Sets up AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
