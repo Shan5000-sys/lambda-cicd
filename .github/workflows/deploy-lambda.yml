@@ -19,29 +19,33 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Dependencies # Installs any packages
+      - name: Install Dependencies # Installs dependencies for Lambda
         run: |
           python -m pip install --upgrade pip
-          pip install -r lambda/requirements.txt -t package/
-
+          pip install -r lambda/requirements.txt -t package/  # Install dependencies in 'package/'
+        
       - name: Package Lambda Function
         run: |
-          cd package
-          zip -r ../lambda.zip .
+          rm -f lambda.zip  # Ensure there's no previous ZIP file
+          echo "Checking package directory before zipping..."
+          ls -lh package/  # Debugging: List installed dependencies
+          cd package || exit 1
+          zip -r ../lambda.zip .  # Zip all dependencies first
+          cd ../lambda || exit 1
+          echo "Checking lambda directory before zipping..."
+          ls -lh  # Debugging: Ensure lambda_function.py exists
+          zip -g ../lambda.zip lambda_function.py  # Add Lambda function code
+          zip -g ../lambda.zip requirements.txt  # Include requirements.txt for reference
           cd ..
-          zip -g lambda.zip lambda/*.py # Add your Lambda function files
-      
-
-      - name: Configure AWS Creds # Sets up our AWS Credentials
+          ls -lh lambda.zip  # Debugging: Check if zip was created
+        
+      - name: Configure AWS Creds # Sets up AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           aws-region: ca-central-1
-
-      - name: Deploy Lambda Function #Zips Lambda directory and updates Lambda function
-        run: |
-          cd lambda
-          zip -r lambda.zip .
-          aws lambda update-function-code --function-name my-test-cicd-lambda --zip-file fileb://lambda.zip
         
+      - name: Deploy Lambda Function # Deploy the packaged Lambda zip
+        run: |
+          aws lambda update-function-code --function-name my-test-cicd-lambda --zip-file fileb://lambda.zip
