@@ -1,1 +1,3 @@
 #this file is empty
+boto3
+requests
