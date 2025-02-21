@@ -35,7 +35,7 @@ jobs:
           zip -g ../lambda.zip lambda_function.py
           zip -g ../lambda.zip requirements.txt
           cd ..
-          aws lambda update-function-code --function-name my-test-cicd-lambda --zip-file fileb://lambda.zip
+          aws lambda update-function-code --function-name my-test-cicd-lambda --zip-file fileb://lambda.zip --region ca-central-1
         
       - name: Configure AWS Creds # Sets up AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
