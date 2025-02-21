@@ -36,7 +36,10 @@ jobs:
           zip -g ../lambda.zip requirements.txt
           cd ..
           aws lambda update-function-code --function-name my-test-cicd-lambda --zip-file fileb://lambda.zip --region ca-central-1
-        
+      
+      - name: Verify AWS Credentials
+        run: aws sts get-caller-identity
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
